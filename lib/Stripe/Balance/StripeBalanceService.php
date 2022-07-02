@@ -4,6 +4,7 @@ namespace Internal\Stripe\Balance;
 
 use Illuminate\Support\Facades\Http;
 use Internal\Bank\BalanceResponse;
+use Internal\Stripe\Exception\BalanceException;
 
 class StripeBalanceService {
     private string $key;
@@ -25,6 +26,6 @@ class StripeBalanceService {
             return new BalanceResponse($balance['available'][0]['amount'], $balance['available'][0]['currency']);
         }
 
-        throw new \Exception('StripBalanceServiceError');
+        throw new BalanceException('StripBalanceServiceError');
     }
 }
