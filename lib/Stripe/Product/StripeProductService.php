@@ -4,6 +4,7 @@ namespace Internal\Stripe\Product;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Internal\Bank\ProductResponse;
 use Internal\Stripe\Exception\StripeProductException;
 
 class StripeProductService {
@@ -18,7 +19,7 @@ class StripeProductService {
     /**
      * @throws StripeProductException
      */
-    public function createProduct(): void {
+    public function createProduct(): ProductResponse {
         $data = [
             'name' => 'FC Barcelona',
             'description' => 'Camiseta de Jogo',
@@ -29,8 +30,10 @@ class StripeProductService {
             ->post("{$this->url}/products", $data);
 
         Log::debug($product->body());
-        if ($product->status() !== 200) {
-            throw new StripeProductException($product->body());
+        if ($product->status() === 200) {
+            return new StripeProductResponse($product['id'], $product['name'], $product['description']);
         }
+
+        throw new StripeProductException($product->body());
     }
 }

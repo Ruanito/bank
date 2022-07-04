@@ -3,6 +3,7 @@
 namespace Internal\Stripe\Balance;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Internal\Bank\BalanceResponse;
 use Internal\Stripe\Exception\BalanceException;
 
@@ -21,6 +22,7 @@ class StripeBalanceService {
      */
     public function getBalance(): BalanceResponse {
         $balance = Http::withToken($this->key)->get("{$this->url}/balance");
+        Log::debug($balance->body());
 
         if ($balance) {
             return new BalanceResponse($balance['available'][0]['amount'], $balance['available'][0]['currency']);

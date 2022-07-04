@@ -8,7 +8,11 @@ use Tests\TestCase;
 class ProductControllerTest extends TestCase {
     private function mockSuccessRequest(): void {
         Http::fake([
-            'https://api.stripe.com/v1/products' => Http::response([], 200, ['Headers']),
+            'https://api.stripe.com/v1/products' => Http::response([
+                'id' => 'id',
+                'name' => 'name',
+                'description' => 'description',
+            ], 200, ['Headers']),
         ]);
     }
 
@@ -24,6 +28,14 @@ class ProductControllerTest extends TestCase {
         $response = $this->call('POST', 'api/products');
 
         $response->assertStatus($expectedStatusCode);
+        $response->assertJson([
+            'status' => 'success',
+            'data' => [
+                'id' => 'id',
+                'name' => 'name',
+                'description' => 'description',
+            ],
+        ]);
     }
 
     public function test_couldNotCreateProduct(): void {

@@ -10,13 +10,13 @@ use Internal\Stripe\Product\StripeProductService;
 class ProductController {
     public function create(Request $request): JsonResponse {
         try {
-            (new StripeProductService())->createProduct();
+            $product =(new StripeProductService())->createProduct();
         } catch (StripeProductException $e) {
             return response()
                 ->json(['status' => 'error', 'data' => json_decode($e->getMessage())], 400);
         }
 
         return response()
-            ->json(['status' => 'success'], 201);
+            ->json(['status' => 'success', 'data' => $product->getAttributes()], 201);
     }
 }
