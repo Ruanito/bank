@@ -2,6 +2,8 @@
 
 namespace Internal\Stripe\Payment;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Internal\Bank\PaymentResponse;
 
 class StripePaymentService {
@@ -14,6 +16,20 @@ class StripePaymentService {
     }
 
     public function createPayment(): PaymentResponse {
-        return new PaymentResponse('https://google.com');
+        $data = [
+          'line_items' => [
+              [
+                  'price' => 'price_1LHqv3Frn2rP77Aaxij7DT9s',
+                  'quantity' => 1,
+              ]
+          ]
+        ];
+
+        $payment = Http::withToken($this->key)
+            ->asForm()
+            ->post("{$this->url}/payment_links", $data);
+
+        Log::warning($payment->body());
+        return new PaymentResponse($payment['url']);
     }
 }
