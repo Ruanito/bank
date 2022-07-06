@@ -4,7 +4,6 @@ namespace Internal\Stripe\Product;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Internal\Bank\ProductResponse;
 use Internal\Stripe\Exception\StripePriceException;
 use Internal\Stripe\Exception\StripeProductException;
 
@@ -21,7 +20,7 @@ class StripeProductService {
      * @throws StripeProductException
      * @throws StripePriceException
      */
-    public function createProduct(): ProductResponse {
+    public function createProduct(): StripeProductResponse {
         $productData = [
             'name' => 'FC Barcelona',
             'description' => 'Camiseta de Jogo',
@@ -56,6 +55,9 @@ class StripeProductService {
              ->withProductId($product['id'])
              ->withName($product['name'])
              ->withDescription($product['description'])
+             ->withPriceId($price['id'])
+             ->withCurrency($price['currency'])
+             ->withAmount($price['unit_amount'])
              ->build();
     }
 }

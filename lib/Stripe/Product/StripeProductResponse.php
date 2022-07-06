@@ -4,11 +4,14 @@ namespace Internal\Stripe\Product;
 
 use Internal\Bank\ProductResponse;
 
-class StripeProductResponse implements ProductResponse {
+class StripeProductResponse {
 
     private string $product_id;
     private string $name;
     private string $description;
+    private string $price_id;
+    private string $currency;
+    private int $amount;
 
     public function getProductId(): string {
         return $this->product_id;
@@ -22,11 +25,18 @@ class StripeProductResponse implements ProductResponse {
         return $this->description;
     }
 
+    public function getPriceId(): string {
+        return $this->price_id;
+    }
+
     public function getAttributes(): array {
         return [
           'product_id' => $this->product_id,
           'name' => $this->name,
           'description' => $this->description,
+          'price_id' => $this->price_id,
+          'currency' => $this->currency,
+          'amount' => $this->amount,
         ];
     }
 

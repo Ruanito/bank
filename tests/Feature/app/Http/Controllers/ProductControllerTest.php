@@ -16,9 +16,9 @@ class ProductControllerTest extends TestCase {
         ]);
         Http::fake([
             'https://api.stripe.com/v1/prices' => Http::response([
-                'id' => 'id',
-                'name' => 'name',
-                'description' => 'description',
+                'id' => 'price_id',
+                'currency' => 'brl',
+                'unit_amount' => 20000,
             ], 200, ['Headers']),
         ]);
     }
@@ -41,6 +41,9 @@ class ProductControllerTest extends TestCase {
                 'product_id' => 'product_id',
                 'name' => 'name',
                 'description' => 'description',
+                'price_id' => 'price_id',
+                'currency' => 'brl',
+                'amount' => 20000
             ],
         ]);
     }

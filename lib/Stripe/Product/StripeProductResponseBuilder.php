@@ -30,8 +30,8 @@ class StripeProductResponseBuilder {
         return $this;
     }
 
-    public function withProductId(string $productId): self {
-        return $this->propertySetter('product_id', $productId);
+    public function withProductId(string $product_id): self {
+        return $this->propertySetter('product_id', $product_id);
     }
 
     public function withName(string $name): self {
@@ -40,6 +40,18 @@ class StripeProductResponseBuilder {
 
     public function withDescription(string $description): self {
         return $this->propertySetter('description', $description);
+    }
+
+    public function withPriceId(string $price_id): self {
+        return $this->propertySetter('price_id', $price_id);
+    }
+
+    public function withCurrency(string $currency): self {
+        return $this->propertySetter('currency', $currency);
+    }
+
+    public function withAmount(int $amount): self {
+        return $this->propertySetter('amount', $amount);
     }
 
     public function build(): StripeProductResponse {
