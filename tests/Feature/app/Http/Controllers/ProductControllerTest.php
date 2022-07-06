@@ -9,6 +9,13 @@ class ProductControllerTest extends TestCase {
     private function mockSuccessRequest(): void {
         Http::fake([
             'https://api.stripe.com/v1/products' => Http::response([
+                'id' => 'product_id',
+                'name' => 'name',
+                'description' => 'description',
+            ], 200, ['Headers']),
+        ]);
+        Http::fake([
+            'https://api.stripe.com/v1/prices' => Http::response([
                 'id' => 'id',
                 'name' => 'name',
                 'description' => 'description',
@@ -31,7 +38,7 @@ class ProductControllerTest extends TestCase {
         $response->assertJson([
             'status' => 'success',
             'data' => [
-                'id' => 'id',
+                'product_id' => 'product_id',
                 'name' => 'name',
                 'description' => 'description',
             ],

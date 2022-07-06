@@ -6,18 +6,12 @@ use Internal\Bank\ProductResponse;
 
 class StripeProductResponse implements ProductResponse {
 
-    private string $id;
+    private string $product_id;
     private string $name;
     private string $description;
 
-    public function __construct(string $id, string $name, string $description) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->description = $description;
-    }
-
-    public function getId(): string {
-        return $this->id;
+    public function getProductId(): string {
+        return $this->product_id;
     }
 
     public function getName(): string {
@@ -30,9 +24,18 @@ class StripeProductResponse implements ProductResponse {
 
     public function getAttributes(): array {
         return [
-          'id' => $this->id,
+          'product_id' => $this->product_id,
           'name' => $this->name,
           'description' => $this->description,
         ];
+    }
+
+    public static function builder(): StripeProductResponseBuilder {
+        $instance = new self();
+        $property_setter = function ($name, $value) use ($instance) {
+            $instance->{$name} = $value;
+        };
+
+        return new StripeProductResponseBuilder($instance, $property_setter);
     }
 }
