@@ -25,14 +25,20 @@ class ProductControllerTest extends TestCase {
 
     private function mockFailRequest(): void {
         Http::fake([
-            'https://api.stripe.com/v1/products' => Http::response([], 400, ['Headers']),
+            'https://api.stripe.com/v1/products' => Http::response(['Invalid request'], 400, ['Headers']),
         ]);
     }
 
     public function test_createProduct(): void {
         $this->mockSuccessRequest();
         $expectedStatusCode = 201;
-        $response = $this->call('POST', 'api/products');
+        $response = $this->call('POST', 'api/products', [
+            'product' => [
+                'name' => 'name',
+                'description' => 'description',
+                'amount' => 10
+            ],
+        ]);
 
         $response->assertStatus($expectedStatusCode);
         $response->assertJson([
@@ -51,8 +57,34 @@ class ProductControllerTest extends TestCase {
     public function test_couldNotCreateProduct(): void {
         $this->mockFailRequest();
         $expectedStatusCode = 400;
+        $response = $this->call('POST', 'api/products', [
+            'product' => [
+                'name' => 'name',
+                'description' => 'description',
+                'amount' => 10
+            ],
+        ]);
+
+        $response->assertStatus($expectedStatusCode);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => ['Invalid request'],
+        ]);
+    }
+
+    public function test_couldNotCreateProductWithInvalidParameters(): void {
+        $this->mockFailRequest();
+        $expectedStatusCode = 400;
         $response = $this->call('POST', 'api/products');
 
         $response->assertStatus($expectedStatusCode);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => [
+                'product.name' => ['The product.name field is required.'],
+                'product.description' => ['The product.description field is required.'],
+                'product.amount' => ['The product.amount field is required.']
+            ],
+        ]);
     }
 }
