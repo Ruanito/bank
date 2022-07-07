@@ -21,8 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('balance', [BalanceController::class, 'index']);
+Route::middleware([\App\Http\Middleware\LogRequest::class])->group(function () {
+    Route::get('balance', [BalanceController::class, 'index']);
 
-Route::post('payments', [PaymentsController::class, 'create']);
+    Route::post('payments', [PaymentsController::class, 'create']);
 
-Route::post('products', [ProductController::class, 'create']);
+    Route::post('products', [ProductController::class, 'create']);
+});
