@@ -23,7 +23,11 @@ class ProductController {
         }
 
         try {
-            $product =(new StripeProductService())->createProduct();
+            $product =(new StripeProductService(
+                $request->input('product.name'),
+                $request->input('product.description'),
+                $request->input('product.amount')
+            ))->createProduct();
         } catch (StripeProductException|StripePriceException $e) {
             return response()
                 ->json(['status' => 'error', 'message' => json_decode($e->getMessage())], 400);

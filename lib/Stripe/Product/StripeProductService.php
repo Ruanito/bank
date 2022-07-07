@@ -11,9 +11,17 @@ class StripeProductService {
     private string $key;
     private string $url;
 
-    public function __construct() {
+    private string $name;
+    private string $description;
+    private int $amount;
+
+    public function __construct(string $name, string $description, int $amount) {
         $this->key = env('STRIPE_PRIVATE_KEY');
         $this->url = env('STRIPE_URL');
+
+        $this->name = $name;
+        $this->description = $description;
+        $this->amount = $amount;
     }
 
     /**
@@ -22,8 +30,8 @@ class StripeProductService {
      */
     public function createProduct(): StripeProductResponse {
         $productData = [
-            'name' => 'FC Barcelona',
-            'description' => 'Camiseta de Jogo',
+            'name' => $this->name,
+            'description' => $this->description,
         ];
 
         $product = Http::withToken($this->key)
@@ -38,7 +46,7 @@ class StripeProductService {
         $priceData = [
             'currency' => 'brl',
             'product' => $product['id'],
-            'unit_amount' => 10000,
+            'unit_amount' => $this->amount,
         ];
 
         $price = Http::withToken($this->key)
