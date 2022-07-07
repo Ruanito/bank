@@ -20,7 +20,7 @@ class LogRequest
         return $next($request);
     }
 
-    public function terminate(Request $request, JsonResponse $response) {
-        Log::info('app.request', ['request' => $request->all(), 'response' => $response->getContent()]);
+    public function terminate(Request $request, JsonResponse $response): void {
+        Log::info('app.request', ['request' => $request->all(), 'response' => json_decode($response->getContent())]);
     }
 }
