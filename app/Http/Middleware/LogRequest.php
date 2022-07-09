@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -16,11 +15,15 @@ class LogRequest
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\JsonResponse
      */
-    public function handle(Request $request, Closure $next): JsonResponse {
+    public function handle(Request $request, Closure $next): mixed {
         return $next($request);
     }
 
-    public function terminate(Request $request, JsonResponse $response): void {
-        Log::info('app.request', ['request' => $request->all(), 'response' => json_decode($response->getContent())]);
+    public function terminate(Request $request, mixed $response): void {
+        if (is_a($response, 'JsonResponse')) {
+            Log::info('app.request', ['request' => $request->all(), 'response' => json_decode($response->getContent())]);
+        } else {
+            Log::info('app.request', ['request' => $request->all(), 'response' => $response]);
+        }
     }
 }
