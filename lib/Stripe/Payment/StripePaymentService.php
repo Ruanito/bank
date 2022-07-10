@@ -8,20 +8,25 @@ use Internal\Bank\PaymentResponse;
 use Internal\Stripe\Exception\StripePaymentException;
 
 class StripePaymentService {
+    private string $key;
+    private string $url;
+
+    public function __construct() {
+        $this->key = env('STRIPE_PRIVATE_KEY');
+        $this->url = env('STRIPE_URL');
+    }
+
     /**
      * @throws StripePaymentException
      */
-    public static function createPayment(array $items): PaymentResponse {
-        $key = env('STRIPE_PRIVATE_KEY');
-        $url = env('STRIPE_URL');
-
+    public function create(array $items): PaymentResponse {
         $data = [
           'line_items' => $items
         ];
 
-        $payment = Http::withToken($key)
+        $payment = Http::withToken($this->key)
             ->asForm()
-            ->post("{$url}/payment_links", $data);
+            ->post("{$this->url}/payment_links", $data);
         Log::info('stripe.payment_links', ['request' => $data,'response' => json_decode($payment->body())]);
 
         if ($payment->status() !== 200) {

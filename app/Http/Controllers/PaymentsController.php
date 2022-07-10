@@ -21,7 +21,7 @@ class PaymentsController extends Controller {
         }
 
         try {
-            $payment = StripePaymentService::createPayment($request->input('items'));
+            $payment = (new StripePaymentService())->create($request->input('items'));
             return redirect()->away($payment->getRedirectUrl());
         } catch (StripePaymentException $e) {
             return response()
