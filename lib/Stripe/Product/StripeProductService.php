@@ -28,36 +28,9 @@ class StripeProductService {
      * @throws StripeProductException
      * @throws StripePriceException
      */
-    public function createProduct(): StripeProductResponse {
-        $productData = [
-            'name' => $this->name,
-            'description' => $this->description,
-        ];
-
-        $product = Http::withToken($this->key)
-            ->asForm()
-            ->post("{$this->url}/products", $productData);
-
-        Log::debug($product->body());
-        if ($product->status() !== 200) {
-            throw new StripeProductException($product->body());
-        }
-
-        $priceData = [
-            'currency' => 'brl',
-            'product' => $product['id'],
-            'unit_amount' => $this->amount,
-        ];
-
-        $price = Http::withToken($this->key)
-            ->asForm()
-            ->post("{$this->url}/prices", $priceData);
-
-
-        Log::debug($price->body());
-        if ($price->status() !== 200) {
-            throw new StripePriceException($product->body());
-        }
+    public function create(): StripeProductResponse {
+        $product = $this->createProduct();
+        $price = $this->createPrice($product);
 
          return StripeProductResponse::builder()
              ->withProductId($product['id'])
@@ -67,5 +40,48 @@ class StripeProductService {
              ->withCurrency($price['currency'])
              ->withAmount($price['unit_amount'])
              ->build();
+    }
+
+    /**
+     * @throws StripeProductException
+     */
+    private function createProduct(): mixed {
+        $data = [
+            'name' => $this->name,
+            'description' => $this->description,
+        ];
+
+        $product = Http::withToken($this->key)
+            ->asForm()
+            ->post("{$this->url}/products", $data);
+
+        Log::info('stripe.product', ['request' => $data, 'response' => json_decode($product->body(), true)]);
+        if ($product->status() !== 200) {
+            throw new StripeProductException($product->body());
+        }
+
+        return $product;
+    }
+
+    /**
+     * @throws StripePriceException
+     */
+    private function createPrice(mixed $product): mixed {
+        $data = [
+            'currency' => 'brl',
+            'product' => $product['id'],
+            'unit_amount' => $this->amount,
+        ];
+
+        $price = Http::withToken($this->key)
+            ->asForm()
+            ->post("{$this->url}/prices", $data);
+
+        Log::info('stripe.price', ['request' => $data, 'response' => json_decode($price->body(), true)]);
+        if ($price->status() !== 200) {
+            throw new StripePriceException($product->body());
+        }
+
+        return $price;
     }
 }

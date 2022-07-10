@@ -27,7 +27,7 @@ class ProductController {
                 $request->input('product.name'),
                 $request->input('product.description'),
                 $request->input('product.amount')
-            ))->createProduct();
+            ))->create();
         } catch (StripeProductException|StripePriceException $e) {
             return response()
                 ->json(['status' => 'error', 'message' => json_decode($e->getMessage())], 400);

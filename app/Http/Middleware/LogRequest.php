@@ -21,7 +21,7 @@ class LogRequest
 
     public function terminate(Request $request, mixed $response): void {
         if (is_a($response, 'JsonResponse')) {
-            Log::info('app.request', ['request' => $request->all(), 'response' => json_decode($response->getContent())]);
+            Log::info('app.request', ['request' => $request->all(), 'response' => json_decode($response->getContent(), true)]);
         } else {
             Log::info('app.request', ['request' => $request->all(), 'response' => $response]);
         }
