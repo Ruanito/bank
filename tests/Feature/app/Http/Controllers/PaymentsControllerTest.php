@@ -6,11 +6,19 @@ use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PaymentsControllerTest extends TestCase {
-    private function mockSuccessRequest(): void {
+    private function mockSuccessRequest() {
         Http::fake([
-            'https://api.stripe.com/v1/products' => Http::response([
+            'https://api.stripe.com/v1/payment_links' => Http::response([
                 'url' => 'https://google.com',
             ], 200, ['Headers']),
+        ]);
+    }
+
+    private function mockInvalidRequest() {
+        Http::fake([
+            'https://api.stripe.com/v1/payment_links' => Http::response([
+                'Invalid request',
+            ], 400, ['Headers']),
         ]);
     }
 
@@ -18,7 +26,7 @@ class PaymentsControllerTest extends TestCase {
         $this->mockSuccessRequest();
         $expectedStatusCode = 302;
         $response = $this->call('POST', 'api/payments', [
-            'payment' => [
+            'items' => [
                 ['price' => 'price', 'quantity' => 1],
             ],
         ]);
@@ -29,15 +37,31 @@ class PaymentsControllerTest extends TestCase {
     public function test_shouldNotCreateWithoutParameters() {
         $this->mockSuccessRequest();
         $expectedStatusCode = 400;
-        $response = $this->call('POST', 'api/payments', ['payment' => [[]]]);
+        $response = $this->call('POST', 'api/payments', ['items' => [[]]]);
 
         $response->assertStatus($expectedStatusCode);
         $response->assertJson([
             'status' => 'error',
             'message' => [
-                'payment.0.price' => ['The payment.0.price field is required.'],
-                'payment.0.quantity' => ['The payment.0.quantity field is required.'],
+                'items.0.price' => ['The items.0.price field is required.'],
+                'items.0.quantity' => ['The items.0.quantity field is required.'],
             ],
+        ]);
+    }
+
+    public function test_shouldNotCreatePaymentWhenStripeReturnsBadRequest() {
+        $this->mockInvalidRequest();
+        $expectedStatusCode = 400;
+        $response = $this->call('POST', 'api/payments', [
+            'items' => [
+                ['price' => 'price', 'quantity' => 1],
+            ],
+        ]);
+
+        $response->assertStatus($expectedStatusCode);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => ['Invalid request'],
         ]);
     }
 }
