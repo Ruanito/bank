@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Internal\Stripe\Balance\StripeBalanceService;
+use Internal\Bank\Balance\BankBalanceService;
 
 class BalanceController extends Controller {
     public function index(): JsonResponse {
-        $balance = new StripeBalanceService();
+        $balance = BankBalanceService::getBalance();
         return response()->json(['status' => 'success', 'data' => [
-            'amount' => $balance->getBalance()->getAmount(),
-            'currency' => $balance->getBalance()->getCurrency(),
+            'amount' => $balance->getAmount(),
+            'currency' => $balance->getCurrency(),
         ]]);
     }
 }
