@@ -33,6 +33,8 @@ class StripePaymentService {
             throw new StripePaymentException($payment->body());
         }
 
-        return new PaymentResponse($payment['url']);
+        return StripePaymentResponse::builder()
+            ->withUrl($payment['url'])
+            ->build();
     }
 }
