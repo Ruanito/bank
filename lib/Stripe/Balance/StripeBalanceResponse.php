@@ -3,7 +3,6 @@
 namespace Internal\Stripe\Balance;
 
 use Internal\Bank\Balance\BankBalanceResponseInterface;
-use Internal\Stripe\Payment\StripePaymentResponseBuilder;
 
 class StripeBalanceResponse implements BankBalanceResponseInterface {
     private int $amount;
