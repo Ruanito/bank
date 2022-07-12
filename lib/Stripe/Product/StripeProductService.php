@@ -5,35 +5,38 @@ namespace Internal\Stripe\Product;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Internal\Bank\Product\BankProductRequest;
+use Internal\Bank\Product\BankProductResponseInterface;
+use Internal\Bank\Product\BankProductServiceInterface;
 use Internal\Stripe\Exception\StripePriceException;
 use Internal\Stripe\Exception\StripeProductException;
 
-class StripeProductService {
+class StripeProductService implements BankProductServiceInterface {
     private string $key;
     private string $url;
 
-    private BankProductRequest $bank_product_request;
-
-    public function __construct(BankProductRequest $bank_product_request) {
+    public function __construct() {
         $this->key = env('STRIPE_PRIVATE_KEY');
         $this->url = env('STRIPE_URL');
+    }
 
-        $this->bank_product_request = $bank_product_request;
+    public function isActive(): bool {
+        return true;
     }
 
     /**
      * @throws StripeProductException
      * @throws StripePriceException
+     * @throws \Exception
      */
-    public function create(): StripeProductResponse {
-        $product = $this->createProduct();
-        $price = $this->createPrice($product);
+    public function create(BankProductRequest $bank_product_request): BankProductResponseInterface {
+        $product = $this->createProduct($bank_product_request);
+        $price = $this->createPrice($bank_product_request, $product);
 
          return StripeProductResponse::builder()
              ->withProductId($product['id'])
              ->withName($product['name'])
              ->withDescription($product['description'])
-             ->withPriceId($price['id'])
+             ->withExternalReference($price['id'])
              ->withCurrency($price['currency'])
              ->withAmount($price['unit_amount'])
              ->build();
@@ -42,10 +45,10 @@ class StripeProductService {
     /**
      * @throws StripeProductException
      */
-    private function createProduct(): mixed {
+    private function createProduct(BankProductRequest $bank_product_request): mixed {
         $data = [
-            'name' => $this->bank_product_request->getName(),
-            'description' => $this->bank_product_request->getDescription(),
+            'name' => $bank_product_request->getName(),
+            'description' => $bank_product_request->getDescription(),
         ];
 
         $product = Http::withToken($this->key)
@@ -63,11 +66,14 @@ class StripeProductService {
     /**
      * @throws StripePriceException
      */
-    private function createPrice(mixed $product): mixed {
+    private function createPrice(
+        BankProductRequest $bank_product_request,
+        mixed $product
+    ): mixed {
         $data = [
             'currency' => 'brl',
             'product' => $product['id'],
-            'unit_amount' => $this->bank_product_request->getAmount(),
+            'unit_amount' => $bank_product_request->getAmount(),
         ];
 
         $price = Http::withToken($this->key)

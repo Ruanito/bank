@@ -42,16 +42,19 @@ class StripeProductResponseBuilder {
         return $this->propertySetter('description', $description);
     }
 
-    public function withPriceId(string $price_id): self {
-        return $this->propertySetter('price_id', $price_id);
-    }
-
     public function withCurrency(string $currency): self {
         return $this->propertySetter('currency', $currency);
     }
 
     public function withAmount(int $amount): self {
         return $this->propertySetter('amount', $amount);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function withExternalReference(string $external_reference): self {
+        return $this->propertySetter('external_reference', $external_reference);
     }
 
     public function build(): StripeProductResponse {

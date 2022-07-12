@@ -6,7 +6,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Validation\Validator as RequestValidator;
+use Internal\Bank\Product\BankProductException;
 use Internal\Bank\Product\BankProductRequest;
+use Internal\Bank\Product\BankProductService;
 use Internal\Stripe\Exception\StripePriceException;
 use Internal\Stripe\Exception\StripeProductException;
 use Internal\Stripe\Product\StripeProductService;
@@ -21,10 +23,10 @@ class ProductController {
 
         try {
             $params = $this->getParams($request);
-            $product =(new StripeProductService($params))->create();
-        } catch (StripeProductException|StripePriceException $e) {
+            $product = BankProductService::create($params);
+        } catch (BankProductException $e) {
             return response()
-                ->json(['status' => 'error', 'message' => json_decode($e->getMessage())], 400);
+                ->json(['status' => 'error', 'message' => $e->getMessage()], 400);
         }
 
         return response()

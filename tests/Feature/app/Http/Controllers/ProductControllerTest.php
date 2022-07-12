@@ -47,7 +47,7 @@ class ProductControllerTest extends TestCase {
                 'product_id' => 'product_id',
                 'name' => 'name',
                 'description' => 'description',
-                'price_id' => 'price_id',
+                'external_reference' => 'price_id',
                 'currency' => 'brl',
                 'amount' => 20000
             ],
@@ -68,7 +68,7 @@ class ProductControllerTest extends TestCase {
         $response->assertStatus($expectedStatusCode);
         $response->assertJson([
             'status' => 'error',
-            'message' => ['Invalid request'],
+            'message' => 'Could not create a PaymentLink',
         ]);
     }
 

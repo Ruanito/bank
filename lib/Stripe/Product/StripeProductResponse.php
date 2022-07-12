@@ -2,16 +2,16 @@
 
 namespace Internal\Stripe\Product;
 
-use Internal\Bank\ProductResponse;
+use Internal\Bank\Product\BankProductResponseInterface;
 
-class StripeProductResponse {
+class StripeProductResponse implements BankProductResponseInterface {
 
     private string $product_id;
     private string $name;
     private string $description;
-    private string $price_id;
     private string $currency;
     private int $amount;
+    private string $external_reference;
 
     public function getProductId(): string {
         return $this->product_id;
@@ -25,18 +25,26 @@ class StripeProductResponse {
         return $this->description;
     }
 
-    public function getPriceId(): string {
-        return $this->price_id;
+    public function getCurrency(): string {
+        return $this->currency;
+    }
+
+    public function getAmount(): int {
+        return $this->amount;
+    }
+
+    public function getExternalReference(): string {
+        return $this->external_reference;
     }
 
     public function getAttributes(): array {
         return [
-          'product_id' => $this->product_id,
-          'name' => $this->name,
-          'description' => $this->description,
-          'price_id' => $this->price_id,
-          'currency' => $this->currency,
-          'amount' => $this->amount,
+            'product_id' => $this->product_id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'currency' => $this->currency,
+            'amount' => $this->amount,
+            'external_reference' => $this->external_reference
         ];
     }
 
