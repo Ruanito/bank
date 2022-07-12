@@ -3,13 +3,7 @@
 namespace Internal\Stripe\Product;
 
 class StripeProductResponseBuilder {
-    /*
-     * @var StripeProductResponse
-     */
     private StripeProductResponse $instance;
-    /*
-     * @var callable
-     */
     private $property_setter;
 
     public function __construct(StripeProductResponse $instance, callable $property_setter) {

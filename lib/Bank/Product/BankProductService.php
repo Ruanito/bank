@@ -7,7 +7,7 @@ use Internal\Stripe\Product\StripeProductService;
 
 class BankProductService {
     /**
-     * @throws BankProductException
+     * @throws \Exception
      */
     public static function create(BankProductRequest $bank_product_request): BankProductResponseInterface {
         $providers = self::getProviders();

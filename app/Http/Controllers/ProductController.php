@@ -9,11 +9,11 @@ use Illuminate\Contracts\Validation\Validator as RequestValidator;
 use Internal\Bank\Product\BankProductException;
 use Internal\Bank\Product\BankProductRequest;
 use Internal\Bank\Product\BankProductService;
-use Internal\Stripe\Exception\StripePriceException;
-use Internal\Stripe\Exception\StripeProductException;
-use Internal\Stripe\Product\StripeProductService;
 
 class ProductController {
+    /**
+     * @throws \Exception
+     */
     public function create(Request $request): JsonResponse {
         $validator = $this->getValidator($request);
         if ($validator->fails()) {
@@ -33,6 +33,9 @@ class ProductController {
             ->json(['status' => 'success', 'data' => $product->getAttributes()], 201);
     }
 
+    /**
+     * @throws \Exception
+     */
     private function getParams(Request $request): BankProductRequest {
         return BankProductRequest::build()
             ->withName($request->input('product.name'))
