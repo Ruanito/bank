@@ -4,6 +4,7 @@ namespace Internal\Stripe\Payment;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Internal\Bank\Payment\BankPaymentRequest;
 use Internal\Bank\PaymentResponse;
 use Internal\Stripe\Exception\StripePaymentException;
 
@@ -19,9 +20,9 @@ class StripePaymentService {
     /**
      * @throws StripePaymentException
      */
-    public function create(array $items): PaymentResponse {
+    public function create(BankPaymentRequest ...$bank_payment_request): PaymentResponse {
         $data = [
-          'line_items' => $items
+          'line_items' => $this->getLineItems(...$bank_payment_request),
         ];
 
         $payment = Http::withToken($this->key)
@@ -36,5 +37,13 @@ class StripePaymentService {
         return StripePaymentResponse::builder()
             ->withUrl($payment['url'])
             ->build();
+    }
+
+    private function getLineItems(BankPaymentRequest ...$bank_payment_request): array {
+        $items = [];
+        foreach ($bank_payment_request as $request) {
+            $items[] = ['price' => $request->getProduct(), 'quantity' => $request->getQuantity()];
+        }
+        return $items;
     }
 }

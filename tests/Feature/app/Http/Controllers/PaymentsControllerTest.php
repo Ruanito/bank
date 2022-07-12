@@ -27,7 +27,7 @@ class PaymentsControllerTest extends TestCase {
         $expectedStatusCode = 302;
         $response = $this->call('POST', 'api/payments', [
             'items' => [
-                ['price' => 'price', 'quantity' => 1],
+                ['product' => 'price', 'quantity' => 1],
             ],
         ]);
 
@@ -43,7 +43,7 @@ class PaymentsControllerTest extends TestCase {
         $response->assertJson([
             'status' => 'error',
             'message' => [
-                'items.0.price' => ['The items.0.price field is required.'],
+                'items.0.product' => ['The items.0.product field is required.'],
                 'items.0.quantity' => ['The items.0.quantity field is required.'],
             ],
         ]);
@@ -54,7 +54,7 @@ class PaymentsControllerTest extends TestCase {
         $expectedStatusCode = 400;
         $response = $this->call('POST', 'api/payments', [
             'items' => [
-                ['price' => 'price', 'quantity' => 1],
+                ['product' => 'price', 'quantity' => 1],
             ],
         ]);
 
