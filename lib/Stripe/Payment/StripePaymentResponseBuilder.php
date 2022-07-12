@@ -22,6 +22,9 @@ class StripePaymentResponseBuilder {
         return $this;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function withUrl(string $url): self {
         return $this->propertySetter('url', $url);
     }

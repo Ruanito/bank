@@ -61,7 +61,7 @@ class PaymentsControllerTest extends TestCase {
         $response->assertStatus($expectedStatusCode);
         $response->assertJson([
             'status' => 'error',
-            'message' => ['Invalid request'],
+            'message' => 'Could not create a PaymentLink',
         ]);
     }
 }

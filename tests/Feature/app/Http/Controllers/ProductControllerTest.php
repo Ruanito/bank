@@ -68,7 +68,7 @@ class ProductControllerTest extends TestCase {
         $response->assertStatus($expectedStatusCode);
         $response->assertJson([
             'status' => 'error',
-            'message' => 'Could not create a PaymentLink',
+            'message' => 'Could not create a Product',
         ]);
     }
 

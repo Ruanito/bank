@@ -2,9 +2,9 @@
 
 namespace Internal\Stripe\Payment;
 
-use Internal\Bank\PaymentResponse;
+use Internal\Bank\Payment\BankPaymentResponseInterface;
 
-class StripePaymentResponse implements PaymentResponse {
+class StripePaymentResponse implements BankPaymentResponseInterface {
     private string $url;
 
     public function getRedirectUrl(): string {

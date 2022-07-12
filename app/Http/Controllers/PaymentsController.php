@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Validation\Validator as RequestValidator;
+use Internal\Bank\Payment\BankPaymentException;
 use Internal\Bank\Payment\BankPaymentRequest;
-use Internal\Stripe\Exception\StripePaymentException;
-use Internal\Stripe\Payment\StripePaymentService;
+use Internal\Bank\Payment\BankPaymentService;
 
 class PaymentsController extends Controller {
     /**
@@ -22,11 +22,11 @@ class PaymentsController extends Controller {
 
         $params = $this->getParams($request);
         try {
-            $payment = (new StripePaymentService())->create(...$params);
+            $payment = BankPaymentService::create(...$params);
             return redirect()->away($payment->getRedirectUrl());
-        } catch (StripePaymentException $e) {
+        } catch (BankPaymentException $e) {
             return response()
-                ->json(['status' => 'error', 'message' => json_decode($e->getMessage())], 400);
+                ->json(['status' => 'error', 'message' => $e->getMessage()], 400);
         }
     }
 

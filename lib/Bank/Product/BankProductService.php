@@ -21,7 +21,7 @@ class BankProductService {
             }
         }
 
-        throw new BankProductException('Could not create a PaymentLink');
+        throw new BankProductException('Could not create a Product');
     }
 
     private static function getProviders(): array {

@@ -5,10 +5,11 @@ namespace Internal\Stripe\Payment;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Internal\Bank\Payment\BankPaymentRequest;
-use Internal\Bank\PaymentResponse;
+use Internal\Bank\Payment\BankPaymentResponseInterface;
+use Internal\Bank\Payment\BankPaymentServiceInterface;
 use Internal\Stripe\Exception\StripePaymentException;
 
-class StripePaymentService {
+class StripePaymentService implements BankPaymentServiceInterface {
     private string $key;
     private string $url;
 
@@ -17,10 +18,15 @@ class StripePaymentService {
         $this->url = env('STRIPE_URL');
     }
 
+    public function isActive(): bool {
+        return true;
+    }
+
     /**
      * @throws StripePaymentException
+     * @throws \Exception
      */
-    public function create(BankPaymentRequest ...$bank_payment_request): PaymentResponse {
+    public function create(BankPaymentRequest ...$bank_payment_request): BankPaymentResponseInterface {
         $data = [
           'line_items' => $this->getLineItems(...$bank_payment_request),
         ];

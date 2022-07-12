@@ -2,4 +2,6 @@
 
 namespace Internal\Stripe\Exception;
 
-class StripePaymentException extends \Exception {}
+use Internal\Bank\Payment\BankPaymentException;
+
+class StripePaymentException extends BankPaymentException {}
