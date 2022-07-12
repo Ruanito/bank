@@ -4,6 +4,7 @@ namespace Internal\Stripe\Product;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Internal\Bank\Product\BankProductRequest;
 use Internal\Stripe\Exception\StripePriceException;
 use Internal\Stripe\Exception\StripeProductException;
 
@@ -11,17 +12,13 @@ class StripeProductService {
     private string $key;
     private string $url;
 
-    private string $name;
-    private string $description;
-    private int $amount;
+    private BankProductRequest $bank_product_request;
 
-    public function __construct(string $name, string $description, int $amount) {
+    public function __construct(BankProductRequest $bank_product_request) {
         $this->key = env('STRIPE_PRIVATE_KEY');
         $this->url = env('STRIPE_URL');
 
-        $this->name = $name;
-        $this->description = $description;
-        $this->amount = $amount;
+        $this->bank_product_request = $bank_product_request;
     }
 
     /**
@@ -47,8 +44,8 @@ class StripeProductService {
      */
     private function createProduct(): mixed {
         $data = [
-            'name' => $this->name,
-            'description' => $this->description,
+            'name' => $this->bank_product_request->getName(),
+            'description' => $this->bank_product_request->getDescription(),
         ];
 
         $product = Http::withToken($this->key)
@@ -70,7 +67,7 @@ class StripeProductService {
         $data = [
             'currency' => 'brl',
             'product' => $product['id'],
-            'unit_amount' => $this->amount,
+            'unit_amount' => $this->bank_product_request->getAmount(),
         ];
 
         $price = Http::withToken($this->key)
