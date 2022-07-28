@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+    mysql:
+        platform: linux/x86_64
+        image: mysql:5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: "password"
+            MYSQL_DATABASE: "laravel"
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./db-data:/var/lib/mysql
+        networks:
+            - mysql-compose-network
+
+networks:
+    mysql-compose-network:
+        driver: bridge
