@@ -2,6 +2,7 @@
 
 namespace Internal\Stripe\Product;
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Internal\Bank\Product\BankProductRequest;
@@ -13,10 +14,12 @@ use Internal\Stripe\Exception\StripeProductException;
 class StripeProductService implements BankProductServiceInterface {
     private string $key;
     private string $url;
+    private Product $product;
 
     public function __construct() {
         $this->key = env('STRIPE_PRIVATE_KEY');
         $this->url = env('STRIPE_URL');
+        $this->product = new Product();
     }
 
     public function isActive(): bool {
@@ -32,6 +35,7 @@ class StripeProductService implements BankProductServiceInterface {
         $product = $this->createProduct($bank_product_request);
         $price = $this->createPrice($bank_product_request, $product);
 
+        $this->saveProduct($product, $price);
          return StripeProductResponse::builder()
              ->withProductId($product['id'])
              ->withName($product['name'])
@@ -86,5 +90,14 @@ class StripeProductService implements BankProductServiceInterface {
         }
 
         return $price;
+    }
+
+    private function saveProduct(mixed $product, mixed $price): void {
+        $this->product->external_reference = $price['id'];
+        $this->product->name = $product['name'];
+        $this->product->description = $product['description'];
+        $this->product->amount = $price['unit_amount'];
+        $this->product->currency = $price['currency'];
+        $this->product->save();
     }
 }

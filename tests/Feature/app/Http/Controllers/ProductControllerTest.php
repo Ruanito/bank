@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -52,6 +53,13 @@ class ProductControllerTest extends TestCase {
                 'amount' => 20000
             ],
         ]);
+
+        $product = Product::where('external_reference', 'price_id')->first();
+
+        $this->assertEquals('name', $product->name);
+        $this->assertEquals('description', $product->description);
+        $this->assertEquals('brl', $product->currency);
+        $this->assertEquals(20000, $product->amount);
     }
 
     public function test_couldNotCreateProduct(): void {
